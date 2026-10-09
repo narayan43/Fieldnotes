@@ -62,13 +62,15 @@ android {
         ?: "fieldnotes123"
     }
     create("debugConfig") {
-      val localDebugFile = file("${rootDir}/debug.keystore")
-      if (localDebugFile.exists()) {
-        storeFile = localDebugFile
-        storePassword = "android"
-        keyAlias = "androiddebugkey"
-        keyPassword = "android"
+      val localDebugFile = when {
+        file("${rootDir}/debug-upload.keystore").exists() -> file("${rootDir}/debug-upload.keystore")
+        file("${rootDir}/debug.keystore").exists() -> file("${rootDir}/debug.keystore")
+        else -> file("${rootDir}/debug-upload.keystore")
       }
+      storeFile = localDebugFile
+      storePassword = "android"
+      keyAlias = "androiddebugkey"
+      keyPassword = "android"
     }
   }
 
@@ -84,7 +86,7 @@ android {
     debug {
       // Do not remove or modify this signingConfig assignment. It is necessary for Android apps in
       // AI Studio.
-      if (file("${rootDir}/debug.keystore").exists()) {
+      if (file("${rootDir}/debug.keystore").exists() || file("${rootDir}/debug-upload.keystore").exists()) {
         signingConfig = signingConfigs.getByName("debugConfig")
       }
     }
