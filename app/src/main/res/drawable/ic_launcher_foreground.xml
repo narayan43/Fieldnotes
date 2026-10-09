@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Field notebook spine and body -->
+    <path
+        android:fillColor="#F1F5F9"
+        android:pathData="M32,24 C28.7,24 26,26.7 26,30 L26,78 C26,81.3 28.7,84 32,84 L76,84 C79.3,84 82,81.3 82,78 L82,30 C82,26.7 79.3,24 76,24 Z" />
+    <!-- Spine binding tape on left -->
+    <path
+        android:fillColor="#0F766E"
+        android:pathData="M26,30 C26,26.7 28.7,24 32,24 L38,24 L38,84 L32,84 C28.7,84 26,81.3 26,78 Z" />
+    <!-- Lined note stripes -->
+    <path
+        android:fillColor="#94A3B8"
+        android:pathData="M44,35 L74,35 A2,2 0 0 1 74,39 L44,39 A2,2 0 0 1 44,35 Z" />
+    <path
+        android:fillColor="#94A3B8"
+        android:pathData="M44,45 L74,45 A2,2 0 0 1 74,49 L44,49 A2,2 0 0 1 44,45 Z" />
+    <path
+        android:fillColor="#94A3B8"
+        android:pathData="M44,55 L64,55 A2,2 0 0 1 64,59 L44,59 A2,2 0 0 1 44,55 Z" />
+    <!-- Timer / Stopwatch badge in lower right corner -->
+    <path
+        android:fillColor="#0D9488"
+        android:pathData="M70,58 C62.8,58 57,63.8 57,71 C57,78.2 62.8,84 70,84 C77.2,84 83,78.2 83,71 C83,63.8 77.2,58 70,58 Z" />
+    <!-- Inner watch face -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M70,61 C64.5,61 60,65.5 60,71 C60,76.5 64.5,81 70,81 C75.5,81 80,76.5 80,71 C80,65.5 75.5,61 70,61 Z" />
+    <!-- Stopwatch hands -->
+    <path
+        android:fillColor="#0F766E"
+        android:pathData="M69,65 L71,65 L71,71 L75,71 L75,73 L69,73 Z" />
+    <!-- Stopwatch top knob -->
+    <path
+        android:fillColor="#0D9488"
+        android:pathData="M68,55 L72,55 L72,58 L68,58 Z" />
+</vector>

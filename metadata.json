@@ -1,0 +1,6 @@
+{
+  "name": "Fieldnotes",
+  "description": "Offline-first personal note-taking, sections, tags, PDF/text export, full zip backup, and focused goal time logging.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
