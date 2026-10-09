@@ -6,31 +6,33 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "goal_sessions",
+    tableName = "sub_goals",
     foreignKeys = [
         ForeignKey(
             entity = Goal::class,
             parentColumns = ["id"],
             childColumns = ["goalId"],
             onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = SubGoal::class,
-            parentColumns = ["id"],
-            childColumns = ["subGoalId"],
-            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
         Index(value = ["goalId"]),
-        Index(value = ["subGoalId"])
+        Index(value = ["goalId", "name"], unique = true)
     ]
 )
-data class GoalSession(
+data class SubGoal(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val goalId: Long,
-    val subGoalId: Long? = null,
-    val startedAt: Long,
-    val endedAt: Long,
-    val durationMs: Long
+    val name: String,
+    val createdAt: Long = System.currentTimeMillis(),
+    val sortOrder: Int = 0
+)
+
+data class SubGoalWithStats(
+    val id: Long,
+    val goalId: Long,
+    val name: String,
+    val createdAt: Long,
+    val sortOrder: Int,
+    val totalTimeMs: Long
 )

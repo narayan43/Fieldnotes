@@ -30,19 +30,19 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "::error::Secret KEYSTORE_BASE64 is missing or empty."
+            echo "::error::Secret KEYSTORE_BASE64 is missing or empty. Add it in GitHub: Settings -> Secrets and variables -> Actions. See RELEASE.md."
             exit 1
           fi
           if [ -z "$STORE_PASSWORD" ]; then
-            echo "::error::Secret STORE_PASSWORD is missing or empty."
+            echo "::error::Secret STORE_PASSWORD is missing or empty. Add it in GitHub: Settings -> Secrets and variables -> Actions. See RELEASE.md."
             exit 1
           fi
           if [ -z "$KEY_ALIAS" ]; then
-            echo "::error::Secret KEY_ALIAS is missing or empty."
+            echo "::error::Secret KEY_ALIAS is missing or empty. Add it in GitHub: Settings -> Secrets and variables -> Actions. See RELEASE.md."
             exit 1
           fi
           if [ -z "$KEY_PASSWORD" ]; then
-            echo "::error::Secret KEY_PASSWORD is missing or empty."
+            echo "::error::Secret KEY_PASSWORD is missing or empty. Add it in GitHub: Settings -> Secrets and variables -> Actions. See RELEASE.md."
             exit 1
           fi
 
