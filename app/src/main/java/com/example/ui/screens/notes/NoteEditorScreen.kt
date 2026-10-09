@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Label
@@ -112,18 +111,6 @@ fun NoteEditorScreen(
             } else {
                 viewModel.showMessage("Failed to import image")
             }
-        }
-    }
-
-    // Camera launcher
-    var cameraTempPath by remember { mutableStateOf<String?>(null) }
-    var cameraTempUri by remember { mutableStateOf<Uri?>(null) }
-
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()
-    ) { success: Boolean ->
-        if (success && cameraTempPath != null) {
-            viewModel.addEditorImage(cameraTempPath!!)
         }
     }
 
@@ -307,36 +294,17 @@ fun NoteEditorScreen(
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedButton(
-                            onClick = {
-                                photoPickerLauncher.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                )
-                            },
-                            modifier = Modifier.testTag("add_gallery_image_button")
-                        ) {
-                            Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Gallery")
-                        }
-
-                        OutlinedButton(
-                            onClick = {
-                                val imagesDir = FileUtils.getImagesDirectory(context)
-                                val fileName = "camera_${System.currentTimeMillis()}.jpg"
-                                val file = File(imagesDir, fileName)
-                                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-                                cameraTempPath = "images/$fileName"
-                                cameraTempUri = uri
-                                cameraLauncher.launch(uri)
-                            },
-                            modifier = Modifier.testTag("add_camera_image_button")
-                        ) {
-                            Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Camera")
-                        }
+                    OutlinedButton(
+                        onClick = {
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        modifier = Modifier.testTag("add_gallery_image_button")
+                    ) {
+                        Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Add Image")
                     }
                 }
             }
@@ -353,7 +321,7 @@ fun NoteEditorScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No images attached. Add visual references from camera or gallery.",
+                            text = "No images attached. Add visual references from your gallery.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

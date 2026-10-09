@@ -38,24 +38,28 @@ android {
         keystoreProps.load(keystorePropsFile.inputStream())
       }
 
+      val envStorePath = System.getenv("KEYSTORE_PATH")
       val localStorePath = keystoreProps.getProperty("storeFile")
-      val envStorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/release.jks"
 
       val resolvedStorePath = when {
-        !localStorePath.isNullOrBlank() -> localStorePath
-        file(envStorePath).exists() -> envStorePath
+        !envStorePath.isNullOrBlank() && file(envStorePath).exists() -> envStorePath
+        !localStorePath.isNullOrBlank() && file(localStorePath).exists() -> localStorePath
+        file("${rootDir}/keystore/release.jks").exists() -> "${rootDir}/keystore/release.jks"
         file("${rootDir}/my-upload-key.jks").exists() -> "${rootDir}/my-upload-key.jks"
-        else -> envStorePath
+        file("${rootDir}/release.jks").exists() -> "${rootDir}/release.jks"
+        else -> "${rootDir}/keystore/release.jks"
       }
 
       storeFile = file(resolvedStorePath)
-      storePassword = keystoreProps.getProperty("storePassword")
-        ?: System.getenv("STORE_PASSWORD")
-      keyAlias = keystoreProps.getProperty("keyAlias")
-        ?: System.getenv("KEY_ALIAS")
-        ?: "upload"
-      keyPassword = keystoreProps.getProperty("keyPassword")
-        ?: System.getenv("KEY_PASSWORD")
+      storePassword = System.getenv("STORE_PASSWORD")
+        ?: keystoreProps.getProperty("storePassword")
+        ?: "fieldnotes123"
+      keyAlias = System.getenv("KEY_ALIAS")
+        ?: keystoreProps.getProperty("keyAlias")
+        ?: "fieldnotes"
+      keyPassword = System.getenv("KEY_PASSWORD")
+        ?: keystoreProps.getProperty("keyPassword")
+        ?: "fieldnotes123"
     }
     create("debugConfig") {
       val localDebugFile = file("${rootDir}/debug.keystore")

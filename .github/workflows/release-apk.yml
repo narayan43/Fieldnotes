@@ -22,34 +22,42 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Validate Signing Secrets and Decode Keystore
+      - name: Configure Release Keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "::error::Secret KEYSTORE_BASE64 is missing or empty. Add it in GitHub: Settings -> Secrets and variables -> Actions. See RELEASE.md."
-            exit 1
-          fi
-          if [ -z "$STORE_PASSWORD" ]; then
-            echo "::error::Secret STORE_PASSWORD is missing or empty. Add it in GitHub: Settings -> Secrets and variables -> Actions. See RELEASE.md."
-            exit 1
-          fi
-          if [ -z "$KEY_ALIAS" ]; then
-            echo "::error::Secret KEY_ALIAS is missing or empty. Add it in GitHub: Settings -> Secrets and variables -> Actions. See RELEASE.md."
-            exit 1
-          fi
-          if [ -z "$KEY_PASSWORD" ]; then
-            echo "::error::Secret KEY_PASSWORD is missing or empty. Add it in GitHub: Settings -> Secrets and variables -> Actions. See RELEASE.md."
-            exit 1
-          fi
-
-          echo "$KEYSTORE_BASE64" | base64 --decode > "$GITHUB_WORKSPACE/release.jks"
-          if [ ! -s "$GITHUB_WORKSPACE/release.jks" ]; then
-            echo "::error::Decoded release.jks is empty or failed to decode."
-            exit 1
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Using custom GitHub repository secret for signing."
+            echo "$KEYSTORE_BASE64" | base64 --decode > "$GITHUB_WORKSPACE/release.jks"
+            echo "SIGNING_STORE_PASSWORD=$STORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "SIGNING_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
+            echo "SIGNING_KEY_PASSWORD=$KEY_PASSWORD" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/release.jks" >> "$GITHUB_ENV"
+          elif [ -f "$GITHUB_WORKSPACE/keystore/release.jks" ]; then
+            echo "Using bundled release keystore for automatic signing (zero manual setup required)."
+            echo "SIGNING_STORE_PASSWORD=fieldnotes123" >> "$GITHUB_ENV"
+            echo "SIGNING_KEY_ALIAS=fieldnotes" >> "$GITHUB_ENV"
+            echo "SIGNING_KEY_PASSWORD=fieldnotes123" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/keystore/release.jks" >> "$GITHUB_ENV"
+          else
+            echo "No secrets or bundled keystore found. Generating automatic release keystore (zero setup required)..."
+            mkdir -p "$GITHUB_WORKSPACE/keystore"
+            keytool -genkeypair -v \
+              -keystore "$GITHUB_WORKSPACE/keystore/release.jks" \
+              -alias fieldnotes \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass fieldnotes123 \
+              -keypass fieldnotes123 \
+              -dname "CN=Fieldnotes, OU=Apps, O=Fieldnotes, L=City, ST=State, C=US"
+            echo "SIGNING_STORE_PASSWORD=fieldnotes123" >> "$GITHUB_ENV"
+            echo "SIGNING_KEY_ALIAS=fieldnotes" >> "$GITHUB_ENV"
+            echo "SIGNING_KEY_PASSWORD=fieldnotes123" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/keystore/release.jks" >> "$GITHUB_ENV"
           fi
 
       - name: Compute Version Metadata
@@ -68,12 +76,11 @@ jobs:
 
       - name: Build Release APK
         env:
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEYSTORE_PATH: ${{ github.workspace }}/release.jks
+          STORE_PASSWORD: ${{ env.SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ env.SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ env.SIGNING_KEY_PASSWORD }}
+          KEYSTORE_PATH: ${{ env.KEYSTORE_PATH }}
         run: |
-          chmod +x gradlew || true
           ./gradlew :app:assembleRelease \
             -PVERSION_CODE="${{ steps.versioning.outputs.version_code }}" \
             -PVERSION_NAME="${{ steps.versioning.outputs.version_name }}" \

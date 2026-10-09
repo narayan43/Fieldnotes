@@ -18,5 +18,6 @@ local.properties
 debug.keystore
 keystore.properties
 *.jks
+!keystore/release.jks
 *.keystore
 release.jks
